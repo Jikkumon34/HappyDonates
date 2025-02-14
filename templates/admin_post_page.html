@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title>HappyDonates - Admin Dashboard</title>
+    <style>
+        :root {
+            --main-bg-color: #9d0069;
+            --main-text-color: #ffffff;
+            --second-text-color: #bbbdc5;
+            --second-bg-color: #edc1ef;
+            --sidebar-bg-color: linear-gradient(135deg, #ff99cc, #ffccff);
+            --sidebar-shadow-color: rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            background-color: white;
+        }
+
+        .primary-text {
+            color: var(--main-text-color);
+        }
+
+        .second-text {
+            color: var(--second-text-color);
+        }
+
+        .primary-bg {
+            background-color: var(--main-bg-color);
+        }
+
+        .secondary-bg {
+            background-color: var(--second-bg-color);
+        }
+
+        .rounded-full {
+            border-radius: 100%;
+        }
+
+        #wrapper {
+            overflow-x: hidden;
+            background-color: white;
+            position: relative;
+        }
+
+        #sidebar-wrapper {
+            min-height: 100vh;
+            width: 250px;
+            margin-left: -250px;
+            background: var(--sidebar-bg-color);
+            box-shadow: 2px 0 10px var(--sidebar-shadow-color);
+            color: var(--main-text-color);
+            transition: margin 0.25s ease-out;
+            position: fixed;
+        }
+
+        #wrapper.toggled #sidebar-wrapper {
+            margin-left: 0;
+        }
+
+        #sidebar-wrapper .sidebar-heading {
+            padding: 0.875rem 1.25rem;
+            font-size: 1.2rem;
+            color: var(--main-bg-color);
+        }
+
+        #sidebar-wrapper .list-group {
+            width: 100%;
+        }
+
+        #page-content-wrapper {
+            width: 100%;
+            min-width: 100vw;
+            transition: margin 0.25s ease-out;
+        }
+
+        #wrapper.toggled #page-content-wrapper {
+            margin-left: 250px;
+        }
+
+        #menu-toggle {
+            cursor: pointer;
+            color: var(--main-bg-color);
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 20px 30px;
+            background-color: transparent;
+            color: var(--main-bg-color);
+        }
+
+        .list-group-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--main-bg-color);
+            font-weight: bold;
+            border: none;
+        }
+
+        .list-group-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .card-counter {
+            box-shadow: 2px 2px 10px #DADADA;
+            margin: 5px;
+            padding: 20px 10px;
+            background-color: #fff;
+            height: 100px;
+            border-radius: 5px;
+            transition: .3s linear all;
+            position: relative;
+        }
+
+        .card-counter:hover {
+            box-shadow: 4px 4px 20px #DADADA;
+            transition: .3s linear all;
+        }
+
+        .card-counter.primary {
+            background-color: var(--main-bg-color);
+            color: #FFF;
+        }
+
+        .card-counter.success {
+            background-color: #66bb6a;
+            color: #FFF;
+        }
+
+        .card-counter.info {
+            background-color: #26c6da;
+            color: #FFF;
+        }
+
+        .card-counter i {
+            font-size: 5em;
+            opacity: 0.2;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .card-counter .count-numbers {
+            font-size: 32px;
+        }
+
+        .card-counter .count-name {
+            font-style: italic;
+            text-transform: capitalize;
+            opacity: 0.5;
+            font-size: 18px;
+        }
+
+        .table-responsive {
+            margin-top: 20px;
+        }
+
+        .table thead th {
+            background-color: var(--main-bg-color);
+            color: #fff;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            background-color: white;
+            padding: 20px;
+        }
+
+        .no-data {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
+                HappyDonates
+            </div>
+            <div class="list-group list-group-flush my-3">
+                <a href="{% url 'admin_home' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">dashboard</span>Dashboard</a>
+                <a href="{% url 'admin_user' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">person</span>Users</a>
+                <a href="{% url 'admin_post' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">favorite</span>Post</a>
+                <a href="{% url 'admin_donation_request' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">volunteer_activism</span>Donations</a>
+                <a href="{% url 'admin_category' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">category</span>Categories</a>
+                <a href="{% url 'admin_location' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">location_on</span>Locations</a>
+                <a href="{% url 'poster_list' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">library_books</span>Add Ads</a>
+
+            </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-align-left primary-text fs-4 me-3" id="menu-toggle"></i>
+                    <h2 class="fs-2 m-0">Post board</h2>
+                </div>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle second-text fw-bold" href="#" id="navbarDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-2"></i>Admin
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#">Profile</a></li>
+                                <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin_logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- main content -->
+            <div class="container-fluid px-4">
+                <div class="row g-4 my-2">
+                    <div class="col-md-3">
+                        <div class="card-counter primary">
+                            <i class="material-icons">people</i>
+                            <span class="count-numbers">{{post_count}}</span>
+                            <span class="count-name">Active Posts</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card-counter success">
+                            <i class="material-icons">equalizer</i>
+                            <span class="count-numbers">{{post_today_count}}</span>
+                            <span class="count-name">Post Today</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card-counter info">
+                            <i class="material-icons">leaderboard</i>
+                            <span class="count-numbers">{{post_month_count}}</span>
+                            <span class="count-name">Post Month</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card-counter primary">
+                            <i class="material-icons">area_chart</i>
+                            <span class="count-numbers">{{post_year_count}}</span>
+                            <span class="count-name">Post Year</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row my-5">
+                    <h3 class="fs-4 mb-3">Posts</h3>
+                    <form class="row g-3 align-items-center" method="POST">
+                        {% csrf_token %}
+                        <div class="col-auto">
+                            <select name="postLocation" class="form-select" aria-label="Default select example">
+                                <option selected>Location</option>
+                                {% for district in Districts %}
+                                <option value="{{district.district_id}}">{{district.district_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <select class="form-select" name="postCategory" aria-label="Default select example">
+                                <option selected>Category</option>
+                                {% for subCat in subCategory %}
+                                <option value="{{subCat.sub_category_id}}">{{subCat.sub_category_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <input type="date" name="startDate" class="form-select">
+                        </div>
+                        <div class="col-auto">
+                            <input type="date" name="endDate" class="form-select">
+                        </div>
+                        <div class="col-auto">
+                            <label for="postSearch" class="visually-hidden">Search Post</label>
+                            <input type="text" name="postSearch" class="form-control" id="postSearch" placeholder="Search Post...">
+                        </div>
+                        <div class="col-auto">
+                            <label for="userPosts" class="visually-hidden">Post Status</label>
+                            <select class="form-select" name="PostStatus" id="userPosts">
+                                <option value="">All Posts</option>
+                                <option value="active">Active Posts</option>
+                                <option value="inactive">Inactive Posts</option>
+                            </select>
+                        </div>
+                        <div class="col-auto" style="width: 100px;">
+                            <label for="PostCount" class="visually-hidden">Post Count</label>
+                            <input type="number" class="form-control" name="PostCount" id="PostCount"
+                                placeholder="Count" min="1">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary mb-3">Filter</button>
+                        </div>
+                    </form>
+
+                    <div class="col table-responsive">
+                        <table class="table bg-white rounded shadow-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col" width="50">#</th>
+                                    <th scope="col">Post Title</th>
+                                    <th scope="col">UserName</th>
+                                    <th scope="col">Location</th>
+                                    <th scope="col">Category</th>
+                                    <th scope="col">Created at</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if post_data %}
+                                {% for data in post_data %}
+                                <tr>
+                                    <th scope="row">{{forloop.counter}}</th>
+                                    <td>{{data.title}}</td>
+                                    <td>{{data.user.username}}</td>
+                                    <td>{{data.location.district_name}}</td>
+                                    <td>{{data.sub_category.sub_category_name}}</td>
+                                    <td>{{data.create_at}}</td>
+                                    <td>{{data.status}}</td>
+                                                <td>
+                    <a href="{% url 'admin_post_detail' data.post_id %}" class="btn btn-info btn-sm">View More</a> <!-- Link to user detail page -->
+                </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">
+                                        <div class="no-data">No post found</div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        var el = document.getElementById("wrapper");
+        var toggleButton = document.getElementById("menu-toggle");
+
+        toggleButton.onclick = function () {
+            el.classList.toggle("toggled");
+        };
+    </script>
+</body>
+
+</html>

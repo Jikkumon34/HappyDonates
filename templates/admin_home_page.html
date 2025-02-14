@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>HappyDonates - Admin Dashboard</title>
+    <style>
+        :root {
+            --main-bg-color: #9d0069;
+            --main-text-color: #ffffff;
+            --second-text-color: #bbbdc5;
+            --second-bg-color: #edc1ef;
+            --sidebar-bg-color: linear-gradient(135deg, #ff99cc, #ffccff);
+            --sidebar-shadow-color: rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            background-color: white;
+        }
+
+        .primary-text {
+            color: var(--main-text-color);
+        }
+
+        .second-text {
+            color: var(--second-text-color);
+        }
+
+        .primary-bg {
+            background-color: var(--main-bg-color);
+        }
+
+        .secondary-bg {
+            background-color: var(--second-bg-color);
+        }
+
+        .rounded-full {
+            border-radius: 100%;
+        }
+
+        #wrapper {
+            overflow-x: hidden;
+            background-color: white;
+            position: relative;
+        }
+
+        #sidebar-wrapper {
+            min-height: 100vh;
+            width: 250px;
+            margin-left: -250px;
+            background: var(--sidebar-bg-color);
+            box-shadow: 2px 0 10px var(--sidebar-shadow-color);
+            color: var(--main-text-color);
+            transition: margin 0.25s ease-out;
+            position: fixed;
+        }
+
+        #wrapper.toggled #sidebar-wrapper {
+            margin-left: 0;
+        }
+
+        #sidebar-wrapper .sidebar-heading {
+            padding: 0.875rem 1.25rem;
+            font-size: 1.2rem;
+            color: var(--main-bg-color);
+        }
+
+        #sidebar-wrapper .list-group {
+            width: 100%;
+        }
+
+        #page-content-wrapper {
+            width: 100%;
+            min-width: 100vw;
+            transition: margin 0.25s ease-out;
+        }
+
+        #wrapper.toggled #page-content-wrapper {
+            margin-left: 250px;
+        }
+
+        #menu-toggle {
+            cursor: pointer;
+            color: var(--main-bg-color);
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 20px 30px;
+            background-color: transparent;
+            color: var(--main-bg-color);
+        }
+
+        .list-group-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--main-bg-color);
+            font-weight: bold;
+            border: none;
+        }
+
+        .list-group-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .card-counter {
+            box-shadow: 2px 2px 10px #DADADA;
+            margin: 5px;
+            padding: 20px 10px;
+            background-color: #fff;
+            height: 100px;
+            border-radius: 5px;
+            transition: .3s linear all;
+            position: relative;
+        }
+
+        .card-counter:hover {
+            box-shadow: 4px 4px 20px #DADADA;
+            transition: .3s linear all;
+        }
+
+        .card-counter.primary {
+            background-color: var(--main-bg-color);
+            color: #FFF;
+        }
+
+        .card-counter.success {
+            background-color: #66bb6a;
+            color: #FFF;
+        }
+
+        .card-counter.info {
+            background-color: #26c6da;
+            color: #FFF;
+        }
+
+        .card-counter i {
+            font-size: 5em;
+            opacity: 0.2;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .card-counter .count-numbers {
+            font-size: 32px;
+        }
+
+        .card-counter .count-name {
+            font-style: italic;
+            text-transform: capitalize;
+            opacity: 0.5;
+            font-size: 18px;
+        }
+
+        .table-responsive {
+            margin-top: 20px;
+        }
+
+        .table thead th {
+            background-color: var(--main-bg-color);
+            color: #fff;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            background-color: white;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
+                HappyDonates
+            </div>
+            <div class="list-group list-group-flush my-3">
+                <a href="{% url 'admin_home' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">dashboard</span>Dashboard</a>
+                <a href="{% url 'admin_user' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">person</span>Users</a>
+                <a href="{% url 'admin_post' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">favorite</span>Post</a>
+                <a href="{% url 'admin_donation_request' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">volunteer_activism</span>Donations</a>
+                <a href="{% url 'admin_category' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">category</span>Categories</a>
+                <a href="{% url 'admin_location' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">location_on</span>Locations</a>
+                <a href="{% url 'poster_list' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">library_books</span>Add Ads</a>
+
+            </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-align-left primary-text fs-4 me-3" id="menu-toggle"></i>
+                    <h2 class="fs-2 m-0">Dashboard</h2>
+                </div>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle second-text fw-bold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-2"></i>Admin
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#">Profile</a></li>
+                                <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin_logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="container-fluid px-4">
+                <div class="row g-3 my-2">
+                    <div class="col-md-4">
+                        <div class="card-counter primary">
+                            <i class="material-icons">people</i>
+                            <span class="count-numbers">{{user_count}}</span>
+                            <span class="count-name">Active Users</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card-counter success">
+                            <i class="material-icons">favorite</i>
+                            <span class="count-numbers">{{post_count}}</span>
+                            <span class="count-name">Active Posts</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card-counter info">
+                            <i class="material-icons">volunteer_activism</i>
+                            <span class="count-numbers">{{donation_count}}</span>
+                            <span class="count-name">Donations</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medium Size Charts Section -->
+                <div class="row my-5">
+                    <div class="col-md-4 mb-4">
+                        <div class="chart-container">
+                            <canvas id="userChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="chart-container">
+                            <canvas id="postChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="chart-container">
+                            <canvas id="donationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row my-5">
+                    <h3 class="fs-4 mb-3">Recent Donation Requests</h3>
+                    <div class="col">
+                        <div class="table-responsive">
+                            <table class="table bg-white rounded shadow-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" width="50">#</th>
+                                        <th scope="col">Title</th>
+                                        <th scope="col">User name</th>
+                                        <th scope="col">Location</th>
+                                        <th scope="col">Last date</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for data in donation_request %}
+                                    <tr>
+                                        <th scope="row">{{forloop.counter}}</th>
+                                        <td>{{data.title}}</td>
+                                        <td>{{data.user.username}}</td>
+                                        <td>{{data.location.district_name}}</td>
+                                        <td>{{data.end_date}}</td>
+                                                                                        <td>
+                    <a href="{% url 'admin_donation_detail' data.donation_id %}" class="btn btn-info btn-sm">View More</a> <!-- Link to user detail page -->
+                </td>
+                                </tr>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var el = document.getElementById("wrapper");
+        var toggleButton = document.getElementById("menu-toggle");
+
+        toggleButton.onclick = function() {
+            el.classList.toggle("toggled");
+        };
+
+        document.addEventListener('click', function(event) {
+            var isClickInside = el.contains(event.target);
+            if (!isClickInside && el.classList.contains('toggled')) {
+                el.classList.remove('toggled');
+            }
+        });
+
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const user_data = JSON.parse('{{ user_data|safe }}');  // Dynamically generated user data
+        const post_data = JSON.parse('{{ post_data|safe }}');  // Dynamically generated post data
+        const donation_data = JSON.parse('{{ donation_data|safe }}');  // Dynamically generated donation data
+
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 14
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            size: 16
+                        }
+                    }
+                }
+            }
+        };
+
+        const userCtx = document.getElementById('userChart').getContext('2d');
+        const postCtx = document.getElementById('postChart').getContext('2d');
+        const donationCtx = document.getElementById('donationChart').getContext('2d');
+
+        const userChart = new Chart(userCtx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'User Registrations',
+                    data: user_data,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    borderRadius: 5,
+                    borderSkipped: false
+                }]
+            },
+            options: commonOptions
+        });
+
+        const postChart = new Chart(postCtx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Posts',
+                    data: post_data,
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 2,
+                    borderRadius: 5,
+                    borderSkipped: false
+                }]
+            },
+            options: commonOptions
+        });
+
+        const donationChart = new Chart(donationCtx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Donations',
+                    data: donation_data,
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 2,
+                    borderRadius: 5,
+                    borderSkipped: false
+                }]
+            },
+            options: commonOptions
+        });
+    </script>
+</body>
+
+</html>

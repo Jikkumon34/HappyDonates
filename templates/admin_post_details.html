@@ -1,0 +1,630 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>HappyDonates - Admin Dashboard</title>
+    <style>
+        :root {
+            --main-bg-color: #9d0069;
+            --main-text-color: #ffffff;
+            --sidebar-bg-color: linear-gradient(135deg, #ff99cc, #ffccff);
+            --sidebar-shadow-color: rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            background-color: white;
+        }
+
+        .primary-text {
+            color: var(--main-text-color);
+        }
+
+        .primary-bg {
+            background-color: var(--main-bg-color);
+        }
+
+        #wrapper {
+            overflow-x: hidden;
+            background-color: white;
+            position: relative;
+        }
+
+        #sidebar-wrapper {
+            min-height: 100vh;
+            width: 250px;
+            margin-left: -250px;
+            background: var(--sidebar-bg-color);
+            box-shadow: 2px 0 10px var(--sidebar-shadow-color);
+            color: var(--main-text-color);
+            transition: margin 0.25s ease-out;
+            position: fixed;
+        }
+
+        #wrapper.toggled #sidebar-wrapper {
+            margin-left: 0;
+        }
+
+        #sidebar-wrapper .sidebar-heading {
+            padding: 0.875rem 1.25rem;
+            font-size: 1.2rem;
+            color: var(--main-bg-color);
+        }
+
+        #sidebar-wrapper .list-group {
+            width: 100%;
+        }
+
+        #page-content-wrapper {
+            width: 100%;
+            min-width: 100vw;
+            transition: margin 0.25s ease-out;
+        }
+
+        #wrapper.toggled #page-content-wrapper {
+            margin-left: 250px;
+        }
+
+        #menu-toggle {
+            cursor: pointer;
+            color: var(--main-bg-color);
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 20px 30px;
+            background-color: transparent;
+            color: var(--main-bg-color);
+        }
+
+        .list-group-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--main-bg-color);
+            font-weight: bold;
+            border: none;
+        }
+
+        .list-group-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control {
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--main-bg-color);
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #7a0059;
+        }
+
+        .text-danger {
+            color: #ff0000;
+        }
+
+        .main-body {
+            padding: 15px;
+        }
+
+        .card {
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+        }
+
+        .card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #fff;
+            background-clip: border-box;
+            border: 0 solid rgba(0, 0, 0, .125);
+            border-radius: .25rem;
+        }
+
+        .card-body {
+            flex: 1 1 auto;
+            min-height: 1px;
+            padding: 1rem;
+        }
+
+        .gutters-sm {
+            margin-right: -8px;
+            margin-left: -8px;
+        }
+
+        .gutters-sm>.col,
+        .gutters-sm>[class*=col-] {
+            padding-right: 8px;
+            padding-left: 8px;
+        }
+
+        .mb-3,
+        .my-3 {
+            margin-bottom: 1rem !important;
+        }
+
+        .bg-gray-300 {
+            background-color: #e2e8f0;
+        }
+
+        .h-100 {
+            height: 100% !important;
+        }
+
+        .shadow-none {
+            box-shadow: none !important;
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 1rem;
+            color: #212529;
+            border-collapse: collapse;
+        }
+
+        table th,
+        table td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+
+        table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        table tbody + tbody {
+            border-top: 2px solid #dee2e6;
+        }
+
+        /* Profile Card */
+        .card-profile {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .card-profile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-profile img {
+            border-radius: 15px;
+            width: 100%;
+            height: auto;
+        }
+
+        /* User Details Card */
+        .card-user-details {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .card-user-details:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-user-details .row {
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .card-user-details .row:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Unified Table Card */
+        .card-unified-table {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .card-unified-table:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-unified-table table {
+            width: 100%;
+            margin-bottom: 1rem;
+            color: #212529;
+            border-collapse: collapse;
+        }
+
+        .card-unified-table table th,
+        .card-unified-table table td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .card-unified-table table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .card-unified-table table tbody + tbody {
+            border-top: 2px solid #dee2e6;
+        }
+
+        .card-unified-table table tbody tr {
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .card-unified-table table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .no-data {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper" role="navigation" aria-label="Sidebar">
+            <div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
+                HappyDonates
+            </div>
+            <div class="list-group list-group-flush my-3">
+                <a href="{% url 'admin_home' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">dashboard</span>Dashboard</a>
+                <a href="{% url 'admin_user' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">person</span>Users</a>
+                <a href="{% url 'admin_post' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">favorite</span>Post</a>
+                <a href="{% url 'admin_donation_request' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">volunteer_activism</span>Donations</a>
+                <a href="{% url 'admin_category' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">category</span>Categories</a>
+                <a href="{% url 'admin_location' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">location_on</span>Locations</a>
+                <a href="{% url 'poster_list' %}" class="list-group-item list-group-item-action">
+                    <span class="material-icons me-2">library_books</span>Add Ads</a>
+
+            </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-align-left primary-text fs-4 me-3" id="menu-toggle" aria-label="Toggle menu"></i>
+                    <h2 class="fs-2 m-0">Post Profile</h2>
+                </div>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle second-text fw-bold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-2"></i>Admin
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#">Profile</a></li>
+                                <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin_logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="container-fluid px-4">
+                <div class="main-body">
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb" class="main-breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'admin_home' %}">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'admin_post' %}">Posts</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Post Details</li>
+                        </ol>
+                    </nav>
+                    <!-- /Breadcrumb -->
+
+                    <div class="row gutters-sm">
+                        <div class="col-md-4 mb-3">
+                            <div class="card card-profile">
+                                <div class="card-body">
+                                    <img src="{% if post.images %}{{ post.images.url }}{% else %}{% static 'images/noimage.png' %}{% endif %}" alt="Post Image" class="rounded">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card card-user-details mb-3">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Title</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            {{ post.title }}
+                                        </div>
+                                    </div>
+                                    <hr>
+                                                                        <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">username</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            {{ post.user.username }}
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Description</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            {{ post.description }}
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Quantity</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            {{ post.quantity }}
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Pick-up Time</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            {{ post.pick_up_time }}
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">End Time</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            {{ post.end_on }}
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Location</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            {{ post.location }}
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Address</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            {{ post.address }}
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Contact Number</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            {{ post.contact_number }}
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Comments</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            {{ post.comments }}
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Status</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            {{ post.status }}
+                                        </div>
+                                    </div>
+                                    <hr>
+                                                    <div class="row mt-3">
+                    <div class="col-sm-12 text-center">
+                        {% if post.status == 'Active' %}
+                            <button type="button" class="btn btn-warning" onclick="showConfirmationModal('{{ post.post_id }}', 'inactive', '{{ post.user.username }}')">Inactive</button>
+                            <button type="button" class="btn btn-danger" onclick="showConfirmationModal('{{ post.post_id}}', 'delete', '{{ post.user.username }}')">Delete</button>
+                        {% elif post.status == 'Pending' %}
+                            <button type="button" class="btn btn-success" onclick="showConfirmationModal('{{ post.post_id }}', 'approve', '{{ post.user.username }}')">Approve</button>
+                            <button type="button" class="btn btn-danger" onclick="showConfirmationModal('{{ post.post_id }}', 'reject', '{{ post.user.username }}')">Reject</button>
+                            <button type="button" class="btn btn-danger" onclick="showConfirmationModal('{{ post.post_id }}', 'delete', '{{ post.user.username }}')">Delete</button>
+                        {% elif post.status == 'Reject' %}
+                            <button type="button" class="btn btn-success" onclick="showConfirmationModal('{{ post.post_id }}', 'approve', '{{ post.user.username }}')">Approve</button>
+                            <button type="button" class="btn btn-danger" onclick="showConfirmationModal('{{ post.post_id}}', 'delete', '{{ post.user.username }}')">Delete</button>
+                        {% elif post.status == 'Inactive' %}
+                            <button type="button" class="btn btn-success" onclick="showConfirmationModal('{{ post.post_id }}', 'active', '{{ post.user.username }}')">Active</button>
+                            <button type="button" class="btn btn-danger" onclick="showConfirmationModal('{{ post.post_id }}', 'delete', '{{ post.user.username }}')">Delete</button>
+                        {% endif %}
+                    </div>
+                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row gutters-sm">
+                        <div class="col-12 mb-3">
+                            <div class="card card-unified-table h-100">
+                                <div class="card-body">
+                                    <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Posts of {{user.username}}</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Title</th>
+                                                    <th scope="col">Date</th>
+                                                    <th scope="col">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% if user_posts %}
+                                                {% for post in user_posts %}
+                                                <tr>
+                                                    <td>{{ post.title }}</td>
+                                                    <td>{{ post.pick_up_time }}</td>
+                                                    <td>{{ post.status }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                                {% else %}
+                                                <tr>
+                                                    <td colspan="3" class="text-center">
+                                                        <div class="no-data">No posts found</div>
+                                                    </td>
+                                                </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to <span id="actionName">perform this action</span> on <span id="userName"></span>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmActionBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- /#page-content-wrapper -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        var el = document.getElementById("wrapper");
+        var toggleButton = document.getElementById("menu-toggle");
+
+        toggleButton.onclick = function() {
+            el.classList.toggle("toggled");
+        };
+    </script>
+    <script type="text/javascript">
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    let currentAction = '';
+    let currentPostId = '';
+
+    function showConfirmationModal(postId, action, username) {
+        currentAction = action;
+        currentPostId = postId;
+        document.getElementById('actionName').textContent = action;
+        document.getElementById('userName').textContent = username;
+        var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'), {});
+        confirmationModal.show();
+    }
+
+    document.getElementById('confirmActionBtn').addEventListener('click', function() {
+        updatePostStatus(currentPostId, currentAction);
+    });
+
+    function updatePostStatus(postId, action) {
+        fetch(`/update_post_status/${action}/${postId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({
+                post_id: postId
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.deleted) {
+                    window.location.href = "{% url 'admin_post' %}";
+                } else {
+                    location.reload();
+                }
+            } else {
+                alert(data.error);
+            }
+        });
+    }
+</script>
+
+</body>
+
+</html>
