@@ -91,14 +91,22 @@ WSGI_APPLICATION = 'HappyDonates.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',  # Path to the SQLite database file
+#     }
+# }
+
 DATABASES = {
     'default': {
 
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'happydonatesdb',
+        'NAME': 'happydonates_db',
         'USER': 'happydonates',
-        'PASSWORD': 'happydonates34',
-        'HOST': 'database-1.cx0wcw86gxf2.ap-southeast-2.rds.amazonaws.com',
+        'PASSWORD': 'happydonates2024',
+        'HOST': 'database-1.cbga6kacsslm.us-east-2.rds.amazonaws.com',
         'PORT': '5432'
 
     }
@@ -157,3 +165,48 @@ CSRF_TRUSTED_ORIGINS = [
     'https://happydonates.com',
 
 ]
+
+
+
+
+AWS_ACCESS_KEY_ID = '' 
+AWS_SECRET_ACCESS_KEY = '' 
+
+
+
+# Basic Storage configuration for Amazon S3 (Irrespective of Django versions)
+
+AWS_STORAGE_BUCKET_NAME = 'happydonates2024' # - Enter your S3 bucket name HERE
+
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+AWS_S3_FILE_OVERWRITE = False
+
+
+
+
+# Django < 4.2
+
+'''
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+'''
+
+# Django 4.2 >
+
+
+STORAGES = {
+
+    # Media file (image) management   
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+    
+    # CSS and JS file management
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+}
+
