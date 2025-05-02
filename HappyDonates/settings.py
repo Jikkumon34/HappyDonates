@@ -176,7 +176,7 @@ AWS_SECRET_ACCESS_KEY = ''
 
 # Basic Storage configuration for Amazon S3 (Irrespective of Django versions)
 
-AWS_STORAGE_BUCKET_NAME = 'happydonates2024' # - Enter your S3 bucket name HERE
+AWS_STORAGE_BUCKET_NAME = 'happydonates-bkt-344' # - Enter your S3 bucket name HERE
 
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
