@@ -105,8 +105,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'happydonates_db',
         'USER': 'happydonates',
-        'PASSWORD': 'happydonates2024',
-        'HOST': 'database-1.cbga6kacsslm.us-east-2.rds.amazonaws.com',
+        'PASSWORD': 'Happydonates2025',
+        'HOST': 'happydonates-database-1.ctycygok4qow.eu-north-1.rds.amazonaws.com',
         'PORT': '5432'
 
     }
