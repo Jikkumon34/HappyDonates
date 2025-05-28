@@ -10,6 +10,7 @@ from .serializers import UserPostSerializer, UserDonationSerializer, UserProfile
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from django.utils import timezone
 
 @api_view(['POST'])
 def register_user(request):
@@ -76,6 +77,7 @@ def saveOrUpdate_user_post(request, post_id=None):
 
 @api_view(['GET', 'POST'])
 def fetch_post(request, post_id=None):
+
     """
     Fetch user posts.
 
@@ -91,6 +93,16 @@ def fetch_post(request, post_id=None):
                   If the requested post is not found, it returns an error message with a status code 404 (Not Found).
                   For any other errors, it returns an error message along with a status code 500 (Internal Server Error).
     """
+
+
+    print(timezone.now())
+    print(UserPostModel.objects.filter(status="Active", end_on__lt=timezone.now()))
+
+
+    UserPostModel.objects.filter(
+        status="Active",
+        end_on__lt=timezone.now()
+    ).update(status="Inactive")
 
     try:
         if post_id is not None:
@@ -191,6 +203,12 @@ def fetch_donation(request, donation_id=None):
                   If the requested donation is not found, it returns an error message with a status code 404 (Not Found).
                   For any other errors, it returns an error message along with a status code 500 (Internal Server Error).
     """
+
+    UserDonationModel.objects.filter(
+        status="Active",
+        end_date__lt=timezone.now()
+    ).update(status="Inactive")
+
     try:
         if donation_id is not None:
             donation = UserDonationModel.objects.select_related('user', 'category', 'location').get(pk=donation_id)

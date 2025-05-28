@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-v90a(a_4zjp+w5iy-!70+=t1(ub7yus474wgu@g8gurtu6wy$@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # ALLOWED_HOSTS = ["*",'http://happydonates.com']
 ALLOWED_HOSTS = ["*", 'happydonates.com']
@@ -166,11 +166,6 @@ CSRF_TRUSTED_ORIGINS = [
 
 ]
 
-
-
-
-AWS_ACCESS_KEY_ID = '' 
-AWS_SECRET_ACCESS_KEY = '' 
 
 
 
